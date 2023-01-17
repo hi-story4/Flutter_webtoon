@@ -32,10 +32,12 @@ class _DetailState extends State<Detail> {
   Future initPref() async {
     //앱 시작시에 받아오는 것.
     prefs = await SharedPreferences.getInstance();
+
     final likedToons = prefs.getStringList('likedToons');
 
     if (likedToons != null) {
-      if (likedToons.contains(widget.id) == true) {
+      if (likedToons.contains('${widget.title},${widget.thumb},${widget.id}') ==
+          true) {
         //좋아요 표시된 웹툰
         setState(() {
           isLiked = true;
@@ -44,6 +46,7 @@ class _DetailState extends State<Detail> {
     } else {
       //List가 null인 경우 새 List를 만들어 디바이스에 저장.
       await prefs.setStringList('likedToons', []);
+      //widget.id가 StringList의 key값.
     }
   }
 
@@ -60,9 +63,9 @@ class _DetailState extends State<Detail> {
     if (likedToons != null) {
       //initPref에서 이미 List 형태를 만들었기 때문에 null값이 나올 일이 거의 없다.
       if (isLiked) {
-        likedToons.remove(widget.id);
+        likedToons.remove('${widget.title},${widget.thumb},${widget.id}');
       } else {
-        likedToons.add(widget.id);
+        likedToons.add('${widget.title},${widget.thumb},${widget.id}');
       }
 
       await prefs.setStringList('likedToons', likedToons);
@@ -130,6 +133,8 @@ class _DetailState extends State<Detail> {
                   if (snapshot.hasData) {
                     return (Column(
                       children: [
+                        //Image.network(snapshot.data!.thumb),
+                        //widget.thumb는 home에서 getTodaytoons를 갖고 오는거고 snapshot은 webtoon, getToonsByid 에서 가져오는것으로 파일이 다름.
                         Text(
                           snapshot.data!.about,
                           style: const TextStyle(fontSize: 16),
